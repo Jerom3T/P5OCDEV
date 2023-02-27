@@ -34,7 +34,7 @@ function productDisplay(productDatas) {
 
   const addToCartButton = document.querySelector("#addToCart");
 
-  addToCartButton.addEventListener("click", () => {
+  addToCartButton.addEventListener("click", function () {
     const quantity = document.querySelector("#quantity").value;
     const color = colorSelect.value;
 
