@@ -38,30 +38,35 @@ function productDisplay(productDatas) {
     const quantity = document.querySelector("#quantity").value;
     const color = colorSelect.value;
 
+    let errorCounter = 0;
     if (!quantity || quantity <= 0) {
-      alert("Veuillez saisir une quantité valide.");
-      return;
+      errorCounter++;
     }
-
+    
     if (!color) {
-      alert("Veuillez choisir une couleur.");
+      errorCounter++;
+    }
+    
+    if (errorCounter > 0) {
+      if (errorCounter === 1) {
+        alert("Veuillez remplir tous les champs requis.");
+      } else {
+        alert("Veuillez remplir tous les champs requis.");
+      }
       return;
     }
-
+    
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
+    
     const product = {
       id: productDatas._id,
-      name: productDatas.name,
-      price: productDatas.price,
-      imageUrl: productDatas.imageUrl,
       quantity: parseInt(quantity),
       color: color,
     };
     cart.push(product);
-
+    
     localStorage.setItem("cart", JSON.stringify(cart));
-
+    
     alert("Le produit a été ajouté au panier.");
   });
 }

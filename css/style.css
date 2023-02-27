@@ -168,35 +168,6 @@ main {
   -webkit-box-orient: vertical;
   white-space: normal;
 }
-.product-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 16px;
-  margin: 8px;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 300px;
-}
-
-.product-card img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 25px;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.612);
-
-}
-
-.product-card h3 {
-  font-size: 1.25rem;
-  margin: 16px 0 8px;
-}
-
-.product-card p {
-  font-size: 1rem;
-  margin: 8px 0;
-}
 
 .product-container {
   display: flex;
