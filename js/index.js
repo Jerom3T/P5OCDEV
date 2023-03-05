@@ -1,12 +1,12 @@
 async function fetchProducts() {
   await fetch("http://localhost:3000/api/products")
-    .then(response => response.json())
-    .then(data => productDisplay(data));
+    .then((response) => response.json())
+    .then((data) => productDisplay(data));
 }
 
 function productDisplay(productDatas) {
   const productContainer = document.querySelector(".items");
-  productDatas.forEach(element => {
+  productDatas.forEach((element) => {
     const a = document.createElement("a");
     a.href = "product.html?id=" + element._id;
     a.classList.add("product-card");
@@ -37,6 +37,5 @@ function productDisplay(productDatas) {
     productContainer.append(a);
   });
 }
-
 
 window.addEventListener("load", fetchProducts);

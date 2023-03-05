@@ -4,7 +4,10 @@ const id = urlSearchParams.get('id');
 async function fetchProduct() {
   await fetch(`http://localhost:3000/api/products/${id}`)
     .then((response) => response.json())
-    .then((data) => productDisplay(data));
+    .then((data) => {
+      console.log('Product data:', data);
+      productDisplay(data);
+    });
 }
 
 function productDisplay(productDatas) {
@@ -15,7 +18,7 @@ function productDisplay(productDatas) {
 
   title.innerText = productDatas.name;
   document.title = productDatas.name;
-  price.innerText = productDatas.price + " €";
+  price.innerText = productDatas.price;
   description.innerText = productDatas.description;
   const imgTag = document.createElement("img");
   imgTag.src = productDatas.imageUrl;
@@ -68,7 +71,9 @@ function productDisplay(productDatas) {
     localStorage.setItem("cart", JSON.stringify(cart));
     
     alert("Le produit a été ajouté au panier.");
+    console.log('Cart:', cart);
   });
 }
 
+console.log('ID:', id);
 window.addEventListener("load", fetchProduct);
