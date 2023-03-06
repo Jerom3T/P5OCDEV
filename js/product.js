@@ -1,11 +1,11 @@
 const urlSearchParams = new URLSearchParams(window.location.search);
-const id = urlSearchParams.get('id');
+const id = urlSearchParams.get("id");
 
 async function fetchProduct() {
   await fetch(`http://localhost:3000/api/products/${id}`)
     .then((response) => response.json())
     .then((data) => {
-      console.log('Product data:', data);
+      console.log("Product data:", data);
       productDisplay(data);
     });
 }
@@ -45,35 +45,63 @@ function productDisplay(productDatas) {
     if (!quantity || quantity <= 0) {
       errorCounter++;
     }
-    
+
     if (!color) {
       errorCounter++;
     }
-    
+
     if (errorCounter > 0) {
       if (errorCounter === 1) {
         alert("Veuillez remplir tous les champs requis.");
       } else {
         alert("Veuillez remplir tous les champs requis.");
       }
-      return;
+    } else {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      function getCart() {
+        return JSON.parse(localStorage.getItem("cart")) || [];
+      }
+
+      function saveCart(cart) {
+        localStorage.setItem("cart", JSON.stringify(cart));
+      }
+
+      function addProductToCart(product) {
+        cart.push(product);
+        alert("Le produit a été ajouté au panier avec succès.");
+      }
+
+      function isProductInCart(cart, product) {
+        for (let i = 0; i < cart.length; i++) {
+          if (cart[i].id === product.id && cart[i].color === product.color) {
+            return i;
+          }
+        }
+        return false;
+      }
+
+      function addProduct() {
+        let product = {
+          id: productDatas._id,
+          quantity: parseInt(quantity),
+          color: color,
+        };
+        let temp = isProductInCart(cart, product);
+
+        if (temp === false) {
+          addProductToCart(product);
+        } else {
+          cart[temp].quantity += parseInt(quantity);
+        }
+
+        saveCart(cart);
+      }
+
+      addProduct();
     }
-    
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    
-    const product = {
-      id: productDatas._id,
-      quantity: parseInt(quantity),
-      color: color,
-    };
-    cart.push(product);
-    
-    localStorage.setItem("cart", JSON.stringify(cart));
-    
-    alert("Le produit a été ajouté au panier.");
-    console.log('Cart:', cart);
   });
 }
 
-console.log('ID:', id);
+console.log("ID:", id);
 window.addEventListener("load", fetchProduct);
