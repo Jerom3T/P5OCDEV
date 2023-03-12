@@ -16,7 +16,7 @@ function deleteProduct(productId, productColor) {
   // enregistre le nouveau tableau dans le stockage local
   localStorage.setItem("cart", JSON.stringify(newCart));
 
-  // Recharge la page pour mettre à jour l'affichage du panier
+  // recharge la page pour mettre à jour l'affichage du panier
   location.reload();
 }
 
@@ -118,5 +118,48 @@ function displayCart() {
 }
 
 displayCart();
+
+async function updateTotalPrice() {
+  let totalPriceCents = 0;
+  let totalQuantity = 0;
+
+  for (let i = 0; i < cart.length; i++) {
+    const item = cart[i];
+
+    const response = await fetch(
+      `http://localhost:3000/api/products/${item.id}`
+    );
+    const productData = await response.json();
+    const productPrice = item.quantity * productData.price;
+    totalPriceCents += productPrice;
+    totalQuantity += item.quantity;
+  }
+
+  if (totalQuantity <= 100) {
+    document.querySelector("#totalQuantity").innerText = totalQuantity;
+    document.querySelector("#totalPrice").innerText = `${totalPriceCents.toFixed(
+      2
+    )} €`;
+  } else {
+    alert("Vous ne pouvez pas commander plus de 100 unités d'un même produit.");
+  }
+}
+
+
+cartItems.addEventListener("change", (event) => {
+  if (event.target.classList.contains("itemQuantity")) {
+    const itemId = event.target.closest(".cart__item").dataset.id;
+
+    cart.find((item) => item.id === itemId).quantity = parseInt(
+      event.target.value
+    );
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    updateTotalPrice();
+  }
+});
+
+
 
 

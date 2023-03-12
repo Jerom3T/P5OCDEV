@@ -105,16 +105,13 @@ function productDisplay(productDatas) {
           quantity: parseInt(quantity),
           color: color,
         };
-
+      
         let temp = isProductInCart(cart, product);
-
+      
         if (temp === false) {
-          // Vérifie si la quantité totale de produits dans le panier ne dépasse pas 100
           if (getCartQuantity(cart) + parseInt(quantity) <= 100) {
-            // Si le produit n'est pas encore dans le panier et que la quantité totale ne dépasse pas 100, on l'ajoute avec la quantité saisie
             addProductToCart(product);
           } else {
-            // Sinon, on affiche un message d'erreur
             alert("Le nombre de produits dans votre panier ne peut pas dépasser 100.");
           }
         } else {
@@ -122,13 +119,18 @@ function productDisplay(productDatas) {
             "Ce produit est déjà dans votre panier. Voulez-vous l'ajouter?"
           );
           if (confirmAdd) {
-            cart[temp].quantity += parseInt(quantity);
-            saveCart(cart);
-            alert("Ajouté au panier avec succès.");
+            if (getCartQuantity(cart) + parseInt(quantity) <= 100) {
+              cart[temp].quantity += parseInt(quantity);
+              saveCart(cart);
+              alert("Ajouté au panier avec succès.");
+            } else {
+              alert("Le nombre de produits dans votre panier ne peut pas dépasser 100.");
+            }
           }
         }
         saveCart(cart);
       }
+      
 
       addProduct();
     }
