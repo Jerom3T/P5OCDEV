@@ -10,9 +10,9 @@ async function fetchProduct() {
       productDisplay(data);
     });
 }
+  // Récupère les éléments HTML nécessaires à l'affichage des données du produit
 
 function productDisplay(productDatas) {
-  // Récupère les éléments HTML nécessaires à l'affichage des données du produit
   const title = document.querySelector("#title");
   const price = document.querySelector("#price");
   const description = document.querySelector("#description");
@@ -25,11 +25,12 @@ function productDisplay(productDatas) {
   description.innerText = productDatas.description;
 
   // Crée une nouvelle image HTML pour afficher l'image du produit
+  
   const imgTag = document.createElement("img");
   imgTag.src = productDatas.imageUrl;
   imgTag.alt = productDatas.name;
   imgTag.title = productDatas.name;
-  img.append(imgTag); // On ajoute l'image à la page HTML
+  img.append(imgTag); 
 
   // Récupère les couleurs disponibles pour le produit et on les ajoute à une liste déroulante sur la page HTML
   const colors = productDatas.colors;
@@ -59,7 +60,7 @@ function productDisplay(productDatas) {
       errorCounter++;
     }
 
-    // Si au moins un champ est manquant ou incorrect, on affiche un message d'erreur
+    // Si au moins un champ est manquant ou incorrect, affichage  d'un message d'erreur
     if (errorCounter > 0) {
       if (errorCounter === 1) {
         alert("Veuillez remplir tous les champs requis.");
@@ -71,12 +72,10 @@ function productDisplay(productDatas) {
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
       function getCart() {
-        // Récupère le contenu du panier depuis le stockage local ou crée un tableau vide s'il n'existe pas encore
         return JSON.parse(localStorage.getItem("cart")) || [];
       }
 
       function saveCart(cart) {
-        // Sauvegarde le contenu du panier dans le stockage local, en convertissant le tableau en chaîne JSON
         localStorage.setItem("cart", JSON.stringify(cart));
       }
 
@@ -101,14 +100,12 @@ function productDisplay(productDatas) {
       }
 
       function addProduct() {
-        // Crée un objet `product` contenant les données du produit à ajouter au panier
         let product = {
           id: productDatas._id,
           quantity: parseInt(quantity),
           color: color,
         };
 
-        // Vérifie si le produit est déjà dans le panier
         let temp = isProductInCart(cart, product);
 
         if (temp === false) {
@@ -121,7 +118,6 @@ function productDisplay(productDatas) {
             alert("Le nombre de produits dans votre panier ne peut pas dépasser 100.");
           }
         } else {
-          // Si le produit est déjà dans le panier, on demande confirmation avant d'ajouter la quantité saisie à la quantité existante
           let confirmAdd = confirm(
             "Ce produit est déjà dans votre panier. Voulez-vous l'ajouter?"
           );
@@ -131,7 +127,6 @@ function productDisplay(productDatas) {
             alert("Ajouté au panier avec succès.");
           }
         }
-        // Sauvegarde le panier dans le stockage local
         saveCart(cart);
       }
 
