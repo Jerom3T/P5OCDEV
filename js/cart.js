@@ -219,19 +219,85 @@ function getCartItems() {
   return cartItemsIds;
 }
 
+function validateFirstName(firstName) {
+  // Autorise uniquement les lettres et les espaces, pas de chiffres
+  const regex = /^[a-zA-Z\s]+$/;
+  return regex.test(firstName);
+}
+
+function validateLastName(lastName) {
+  // Autorise uniquement les lettres et les espaces, pas de chiffres
+  const regex = /^[a-zA-Z\s]+$/;
+  return regex.test(lastName);
+}
+
+function validateAddress(address) {
+  // Autorise n'importe quel caractère
+  return true;
+}
+
+function validateCity(city) {
+  // Autorise n'importe quel caractère
+  return true;
+}
+
+function validateEmail(email) {
+  // Vérifie si l'email contient un @
+  const regex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+  return regex.test(email);
+}
+
 // Fonction de validation des données du formulaire
 function validateFormData(formData) {
   const requiredFields = ["firstName", "lastName", "address", "city", "email"];
 
-  // Vérifie si chaque champ requis est présent dans les données du formulaire
+  // Parcoure la liste des champs requis
   for (const field of requiredFields) {
+    // Vérifie si le champ est présent dans les données du formulaire
     if (!formData.has(field)) {
       return false;
     }
+
+    // Récupère la valeur du champ
+    const value = formData.get(field);
+
+    // Valide la valeur du champ en fonction du type de champ
+    switch (field) {
+      case "firstName":
+        if (!validateFirstName(value)) {
+          return false;
+        }
+        break;
+      case "lastName":
+        if (!validateLastName(value)) {
+          return false;
+        }
+        break;
+      case "address":
+        if (!validateAddress(value)) {
+          return false;
+        }
+        break;
+      case "city":
+        if (!validateCity(value)) {
+          return false;
+        }
+        break;
+      case "email":
+        if (!validateEmail(value)) {
+          return false;
+        }
+        break;
+      default:
+        return false;
+    }
   }
 
+  // Retourne true si toutes les validations sont passées
   return true;
 }
+
+
 
 // Fonction pour envoyer les données de la commande à l'API et récupérer l'identifiant de la commande
 async function sendOrderData(contactData, productIds) {
