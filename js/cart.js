@@ -1,7 +1,7 @@
 // récupère les données du panier depuis le stockage local, ou initialise un tableau vide si aucune donnée n'a été enregistrée
 const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-// sélectionne les éléments HTML pertinents
+// sélectionne les éléments HTML
 const cartItems = document.querySelector("#cart__items");
 const totalQuantity = document.querySelector("#totalQuantity");
 const orderForm = document.querySelector(".cart__order__form");
@@ -122,7 +122,6 @@ function calculateQuantityTotal(cart) {
   };
 }
 
-
 function setTotalPriceAndQuantity(quantityTotal, priceTotal) {
   totalQuantity.innerText = quantityTotal;
 
@@ -206,121 +205,94 @@ async function updateTotalPrice() {
   }
 }
 
-// Fonction de validation d'une donnée avec une regex
-function validateData(data, regex) {
-  if (!regex.test(data)) {
-    return false;
+
+// Fonction pour récupérer les articles du panier
+function getCartItems() {
+  const cartItems = document.querySelectorAll(".cart__item");
+  const cartItemsIds = [];
+
+  // Boucle sur chaque élément du panier pour récupérer son identifiant
+  for (const item of cartItems) {
+    cartItemsIds.push(item.getAttribute("data-id"));
   }
+
+  return cartItemsIds;
+}
+
+// Fonction de validation des données du formulaire
+function validateFormData(formData) {
+  const requiredFields = ["firstName", "lastName", "address", "city", "email"];
+
+  // Vérifie si chaque champ requis est présent dans les données du formulaire
+  for (const field of requiredFields) {
+    if (!formData.has(field)) {
+      return false;
+    }
+  }
+
   return true;
 }
 
-// Fonction de vérification des données saisies par l'utilisateur
-function validateForm() {
-  const firstName = document.getElementById('firstName').value;
-  const lastName = document.getElementById('lastName').value;
-  const address = document.getElementById('address').value;
-  const city = document.getElementById('city').value;
-  const email = document.getElementById('email').value;
+// Fonction pour envoyer les données de la commande à l'API et récupérer l'identifiant de la commande
+async function sendOrderData(contactData, productIds) {
+  try {
+    const response = await fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contact: contactData,
+        products: productIds,
+      }),
+    });
 
-  const firstNameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ-]+$/;
-  const lastNameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ-]+$/;
-  const addressRegex = /^[0-9]{1,3}\s[A-Za-zÀ-ÖØ-öø-ÿ\s]{3,}$/;
-  const cityRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]{2,}$/;
-  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP ${response.status}`);
+    }
 
-  let firstNameError = '';
-  let lastNameError = '';
-  let addressError = '';
-  let cityError = '';
-  let emailError = '';
-
-  if (!validateData(firstName, firstNameRegex)) {
-    firstNameError = 'Le prénom n\'est pas valide.';
+    const data = await response.json();
+    return data.orderId; // Retourne l'identifiant de la commande
+  } catch (error) {
+    console.error("Erreur lors de l'envoi des données de commande :", error);
+    return null;
   }
-  if (!validateData(lastName, lastNameRegex)) {
-    lastNameError = 'Le nom n\'est pas valide.';
-  }
-  if (!validateData(address, addressRegex)) {
-    addressError = 'L\'adresse n\'est pas valide.';
-  }
-  if (!validateData(city, cityRegex)) {
-    cityError = 'La ville n\'est pas valide.';
-  }
-  if (!validateData(email, emailRegex)) {
-    emailError = 'L\'adresse e-mail n\'est pas valide.';
-  }
-
-  // Affichage des messages d'erreur si nécessaire
-  document.getElementById('firstNameErrorMsg').textContent = firstNameError;
-  document.getElementById('lastNameErrorMsg').textContent = lastNameError;
-  document.getElementById('addressErrorMsg').textContent = addressError;
-  document.getElementById('cityErrorMsg').textContent = cityError;
-  document.getElementById('emailErrorMsg').textContent = emailError;
-
-  // Retourne true si toutes les données sont valides, false sinon
-  if (!firstNameError && !lastNameError && !addressError && !cityError && !emailError) {
-    return true;
-  }
-  return false;
 }
 
-// Fonction de création de l'objet contact
-function createContact() {
-  const firstName = document.getElementById('firstName').value;
-  const lastName = document.getElementById('lastName').value;
-  const address = document.getElementById('address').value;
-  const city = document.getElementById('city').value;
-  const email = document.getElementById('email').value;
-
-  const contact = {
-    firstName: firstName,
-    lastName: lastName,
-    address: address,
-    city: city,
-    email: email
-  };
-  return contact;
-}
-
-// Fonction de création du tableau de produits
-function createProductsArray() {
-  const products = [];
-
-  // Boucle sur tous les articles du panier
-  const cartItems = document.querySelectorAll('.cart__item');
-  cartItems.forEach((item) => {
-    const productId = item.getAttribute('data-id');
-    const productColor = item.getAttribute('data-color');
-    const productQuantity = item.querySelector('.itemQuantity').value;
-
-    const product = {
-      _id: productId,
-      color: productColor,
-      quantity: productQuantity
-    };
-    products.push(product);
-  });
-
-  return products;
-}
-
-// Récupération du bouton "commander"
-const orderButton = document.getElementById('order');
-
-// Ajout de l'événement "click" sur le bouton "commander"
-orderButton.addEventListener('click', (event) => {
+// Gérer la soumission du formulaire
+orderForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  // Vérification des données du formulaire et envoi de la commande à l'API
-  if (validateForm()) {
-    sendOrder().then((response) => {
-      // Si la commande a bien été enregistrée, affichage de la page de confirmation
-      if (response.orderId) {
-        window.location.href = `./confirmation.html?id=${response.orderId}`;
-      }
-    }).catch((error) => {
-      console.error(error);
-      alert(`Une erreur est survenue : ${error}`);
-    });
+  const formData = new FormData(orderForm);
+
+  // Valide les données du formulaire
+  if (!validateFormData(formData)) {
+    alert("Veuillez remplir tous les champs du formulaire.");
+    return;
+  }
+
+  const contactData = Object.fromEntries(formData.entries());
+  const productIds = getCartItems();
+
+  // Vérifie si le panier est vide
+  if (productIds.length === 0) {
+    alert("Votre panier est vide.");
+    return;
+  }
+
+  // Envoie les données de la commande et récupère l'identifiant de la commande
+  const orderId = await sendOrderData(contactData, productIds);
+  
+  // Si l'identifiant de la commande existe, redirige vers la page de confirmation
+  if (orderId) {
+    redirectToConfirmationPage(orderId);
+  } else {
+    alert("Une erreur s'est produite lors de la soumission de votre commande.");
   }
 });
+
+// Fonction pour rediriger vers la page de confirmation avec l'identifiant de la commande
+function redirectToConfirmationPage(orderId) {
+  // Navigue vers la page de confirmation en ajoutant l'identifiant de commande à l'URL
+  window.location.href = `./confirmation.html?orderId=${orderId}`;
+}
