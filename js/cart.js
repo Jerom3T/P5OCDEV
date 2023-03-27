@@ -298,7 +298,6 @@ function validateFormData(formData) {
 }
 
 
-
 // Fonction pour envoyer les données de la commande à l'API et récupérer l'identifiant de la commande
 async function sendOrderData(contactData, productIds) {
   try {
