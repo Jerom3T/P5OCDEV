@@ -1,16 +1,27 @@
-// Fonction qui effectue une requête pour récupérer les produits depuis l'API
+/**
+ * // Fonction qui effectue une requête pour récupérer les produits depuis l'API
+ * @date 29/03/2023 - 18:37:12
+ *
+ * @async
+ * @returns {*}
+ */
 async function fetchProducts() {
   // Effectue une requête GET vers l'URL pour récupérer les produits
   await fetch("http://localhost:3000/api/products")
-    .then(response => response.json())
-    .then(data => productDisplay(data));
+    .then((response) => response.json())
+    .then((data) => productDisplay(data));
 }
 
-// Fonction qui affiche les produits sur la page
+/**
+ * // Fonction qui affiche les produits sur la page
+
+ * @date 29/03/2023 - 18:38:18
+ *
+ * @param {*} productDatas
+ */
 function productDisplay(productDatas) {
   const productContainer = document.querySelector(".items");
-  productDatas.forEach(element => {
-
+  productDatas.forEach((element) => {
     // Création des différents éléments concernant le produit.
 
     const a = document.createElement("a");
@@ -35,7 +46,7 @@ function productDisplay(productDatas) {
     pDescription.innerText = element.description;
     pDescription.classList.add("productDescription");
     article.append(pDescription);
-    
+
     productContainer.append(a);
   });
 }

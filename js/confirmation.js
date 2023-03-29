@@ -1,8 +1,12 @@
-// Récupère l'ordreId de l'URL
-let orderId = new URLSearchParams(window.location.search).get('orderId');
+/**
+ * Récupère l'identifiant de commande depuis les paramètres de l'URL, puis affiche cet identifiant dans la page HTML
+ * Vide le localStorage
+ * @date 29/03/2023 - 21:37:38
+ */
+function displayOrderConfirmation() {
+  const orderId = new URLSearchParams(window.location.search).get("orderId");
+  document.getElementById("orderId").textContent = orderId;
+  window.localStorage.clear();
+}
 
-// Met le N° de commande dans la zone HTML 
-document.getElementById('orderId').textContent = orderId;
-
-// Vide le localStorage
-window.localStorage.clear();
+displayOrderConfirmation();
