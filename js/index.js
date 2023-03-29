@@ -6,7 +6,6 @@
  * @returns {*}
  */
 async function fetchProducts() {
-  // Effectue une requête GET vers l'URL pour récupérer les produits
   await fetch("http://localhost:3000/api/products")
     .then((response) => response.json())
     .then((data) => productDisplay(data));

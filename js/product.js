@@ -86,6 +86,8 @@ function showColors(productDatas) {
   }
 }
 
+
+
 /**
  *   // Si tout est correct, on récupère le contenu du panier depuis le stockage local ou on crée un tableau vide s'il n'existe pas encore
 
@@ -234,7 +236,7 @@ function getCartQuantity(cart) {
 }
 
 /**
- * // Enregistre le panier dans le stockage local du navigateur sous forme de
+ * // Enregistre le panier dans le stockage local du navigateur sous forme de chaîne de caractères JSON à l'aide de la méthode "JSON.stringify"
  * @date 29/03/2023 - 18:51:32
  *
  * @param {*} cart
@@ -254,6 +256,7 @@ function addProductToCart(cart, product) {
   cart.push(product);
   alert("Le produit a été ajouté au panier avec succès.");
 }
+
 
 console.log("ID:", id);
 window.addEventListener("load", fetchProduct);
