@@ -328,150 +328,118 @@ function getCartItems() {
 function validateFirstName(firstName) {
   const regex = /^[a-zA-Z\s]+$/;
   if (!regex.test(firstName)) {
-    if (/^\d+$/.test(firstName)) {
-      throw new Error(
-        "Le prénom ne doit contenir que des lettres et des espaces, pas de chiffres."
-      );
-    } else {
-      throw new Error(
-        "Le prénom ne doit contenir que des lettres et des espaces."
-      );
-    }
+    return "Le prénom ne doit contenir que des lettres et des espaces.";
   }
-  return true;
 }
 
 /**
- *  // Focntion autorise uniquement les lettres et les espaces, pas de chiffres dans le champ
- * @date 29/03/2023 - 21:29:12
+ *  // Fonction autorise uniquement les lettres et les espaces, pas de chiffres dans le champ
+ * @date 02/04/2023 - 21:18:38
  *
  * @param {*} lastName
- * @returns {boolean}
+ * @returns {string}
  */
 function validateLastName(lastName) {
   const regex = /^[a-zA-Z\s]+$/;
   if (!regex.test(lastName)) {
-    if (/^\d+$/.test(lastName)) {
-      throw new Error(
-        "Le nom ne doit contenir que des lettres et des espaces, pas de chiffres."
-      );
-    } else {
-      throw new Error(
-        "Le nom ne doit contenir que des lettres et des espaces."
-      );
-    }
+    return "Le nom ne doit contenir que des lettres et des espaces.";
   }
-  return true;
 }
 
-/**
- *   // Fonctio autorise n'importe quel caractère
-
- * @date 29/03/2023 - 21:29:53
- *
- * @param {*} address
- * @returns {boolean}
- */
 function validateAddress(address) {
-  return true;
+  const regex = /^[\w\s-]+$/;
+  if (!regex.test(address)) {
+    return "L'adresse ne doit contenir que des lettres, des espaces, des tirets et des chiffres.";
+  }
 }
 
-/**
- *   // Fonction autorise uniquement les lettres et les espaces, pas de chiffres
-
- * @date 29/03/2023 - 21:30:13
- *
- * @param {*} city
- * @returns {boolean}
- */
 function validateCity(city) {
   const regex = /^[a-zA-Z\s]+$/;
   if (!regex.test(city)) {
-    if (/^\d+$/.test(city)) {
-      throw new Error(
-        "La ville ne doit contenir que des lettres et des espaces, pas de chiffres."
-      );
-    } else {
-      throw new Error(
-        "La ville ne doit contenir que des lettres et des espaces."
-      );
-    }
+    return "La ville ne doit contenir que des lettres et des espaces.";
   }
-  return true;
 }
 
-/**
- *   // Vérifie si l'email contient un @
-
- * @date 29/03/2023 - 21:30:46
- *
- * @param {*} email
- * @returns {*}
- */
 function validateEmail(email) {
-  const regex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
-  return regex.test(email);
+  const regex = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[a-zA-Z]{2,7})$/;
+  if (!regex.test(email)) {
+    return "L'email doit être au format 'string@string.string'.";
+  }
 }
 
 /**
- * // Fonction de validation des données du formulaire
- * @date 29/03/2023 - 21:31:05
+ *  Cette fonction valide les données du formulaire et retourne true si toutes les données sont valides, false sinon.
+ * @date 02/04/2023 - 21:20:14
  *
  * @param {*} formData
  * @returns {boolean}
  */
 function validateFormData(formData) {
   const requiredFields = ["firstName", "lastName", "address", "city", "email"];
+  const fieldNames = {
+    firstName: "Prénom",
+    lastName: "Nom",
+    address: "Adresse",
+    city: "Ville",
+    email: "Email",
+  };
+  const errors = {};
 
-  // Vérifie si tous les champs requis sont vides
-  if (Array.from(formData.values()).some((value) => !value.trim())) {
-    throw new Error("Veuillez remplir tous les champs du formulaire.");
-  }
-
-  // Parcoure la liste des champs requis
   for (const field of requiredFields) {
-    // Vérifie si le champ est présent dans les données du formulaire
     if (!formData.has(field)) {
-      return false;
-    }
-
-    // Récupère la valeur du champ
-    const value = formData.get(field);
-
-    // Valide la valeur du champ en fonction du type de champ
-    switch (field) {
-      case "firstName":
-        if (!validateFirstName(value)) {
-          return false;
-        }
-        break;
-      case "lastName":
-        if (!validateLastName(value)) {
-          return false;
-        }
-        break;
-      case "address":
-        if (!validateAddress(value)) {
-          return false;
-        }
-        break;
-      case "city":
-        if (!validateCity(value)) {
-          return false;
-        }
-        break;
-      case "email":
-        if (!validateEmail(value)) {
-          return false;
-        }
-        break;
-      default:
-        return false;
+      errors[field] = `Le champ ${fieldNames[field]} est obligatoire.`;
+    } else {
+      const value = formData.get(field);
+      switch (field) {
+        case "firstName":
+          const firstNameError = validateFirstName(value);
+          if (firstNameError) {
+            errors[field] = firstNameError;
+          }
+          break;
+        case "lastName":
+          const lastNameError = validateLastName(value);
+          if (lastNameError) {
+            errors[field] = lastNameError;
+          }
+          break;
+        case "address":
+          const addressError = validateAddress(value);
+          if (addressError) {
+            errors[field] = addressError;
+          }
+          break;
+        case "city":
+          const cityError = validateCity(value);
+          if (cityError) {
+            errors[field] = cityError;
+          }
+          break;
+        case "email":
+          const emailError = validateEmail(value);
+          if (emailError) {
+            errors[field] = emailError;
+          }
+          break;
+        default:
+          errors[field] = "Champ invalide.";
+      }
     }
   }
 
-  // Retourne true si toutes les validations sont passées
-  return true;
+  if (Object.keys(errors).length === 0) {
+    return true;
+  } else {
+    for (const field in errors) {
+      const input = document.querySelector(`[name="${field}"]`);
+      const error = errors[field];
+      const errorMessage = document.createElement("div");
+      errorMessage.textContent = error;
+      errorMessage.classList.add("error-message");
+      input.insertAdjacentElement("afterend", errorMessage);
+    }
+    return false;
+  }
 }
 
 /**
@@ -509,53 +477,45 @@ async function sendOrderData(contactData, productIds) {
   }
 }
 
-// Gérer la soumission du formulaire
-orderForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const formData = new FormData(orderForm);
-
-  // Vérifier si le formulaire a été rempli
-  if (formData.keys().length === 0) {
-    alert("Veuillez remplir le formulaire avant de le soumettre.");
-    return;
-  }
-
-  // Valide les données du formulaire
-  try {
-    validateFormData(formData);
-  } catch (error) {
-    alert(error.message);
-    return;
-  }
-
-  const contactData = Object.fromEntries(formData.entries());
-  const productIds = getCartItems();
-
-  // Vérifie si le panier est vide
-  if (productIds.length === 0) {
-    alert("Votre panier est vide.");
-    return;
-  }
-
-  // Envoie les données de la commande et récupère l'identifiant de la commande
-  const orderId = await sendOrderData(contactData, productIds);
-
-  // Si l'identifiant de la commande existe, redirige vers la page de confirmation
-  if (orderId) {
-    redirectToConfirmationPage(orderId);
-  } else {
-    alert("Une erreur s'est produite lors de la soumission de votre commande.");
-  }
-});
-
-/**
- * // Fonction pour rediriger vers la page de confirmation avec l'identifiant de la commande
- * @date 29/03/2023 - 21:34:51
- *
- * @param {*} orderId
- */
+// Définition de la fonction redirectToConfirmationPage
 function redirectToConfirmationPage(orderId) {
   // Navigue vers la page de confirmation en ajoutant l'identifiant de commande à l'URL
   window.location.href = `./confirmation.html?orderId=${orderId}`;
 }
+
+const form = document.querySelector("form");
+
+form.addEventListener("submit", (event) => {
+  const formData = new FormData(form);
+  const isValid = validateFormData(formData);
+
+  if (!isValid) {
+    event.preventDefault();
+  } else {
+    const contactData = Object.fromEntries(formData.entries());
+    const productIds = getCartItems();
+
+    // Vérifie si le panier est vide
+    if (productIds.length === 0) {
+      alert("Votre panier est vide.");
+      event.preventDefault();
+      return;
+    }
+
+    // Envoie les données de la commande et récupère l'identifiant de la commande
+    sendOrderData(contactData, productIds)
+      .then((orderId) => {
+        // Si l'identifiant de la commande existe, redirige vers la page de confirmation
+        if (orderId) {
+          redirectToConfirmationPage(orderId);
+        } else {
+          alert(
+            "Une erreur s'est produite lors de la soumission de votre commande."
+          );
+        }
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  }
+});
